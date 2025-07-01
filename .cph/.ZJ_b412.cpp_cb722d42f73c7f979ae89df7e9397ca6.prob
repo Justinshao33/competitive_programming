@@ -1,0 +1,1 @@
+{"name":"Local: ZJ_b412","url":"/home/justinshao/competitive_programming/practice/ZJ_b412.cpp","tests":[{"id":1715188401349,"input":"2 5\n2 1 2\n1 1 2\n2 1 2\n1 1\n3 0 3","output":"0\n1\n0"}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"/home/justinshao/competitive_programming/practice/ZJ_b412.cpp","group":"local","local":true}

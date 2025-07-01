@@ -1,0 +1,1 @@
+{"name":"Local: tioj_2151","url":"/home/justinshao/competitive_programming/practice/tioj_2151.cpp","tests":[{"id":1718516654837,"input":"3 4 1 1\n10 1 2\n1 2\n1 3\n2 3\n3 2","output":"2"}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"/home/justinshao/competitive_programming/practice/tioj_2151.cpp","group":"local","local":true}

@@ -1,0 +1,99 @@
+#pragma GCC optimize("O3,unroll-loops")
+#pragma GCC target("avx,popcnt,sse4,abm")
+#include<bits/stdc++.h>
+using namespace std;
+#define ZTMYACANESOCUTE ios_base::sync_with_stdio(0), cin.tie(0)
+#define ll long long
+#define ull unsigned long long
+#define pb push_back
+#define all(a) (a).begin(), (a).end()
+#define debug(x) cerr << #x << " = " << x << '\n';
+#define rep(X, a, b) for(int X = a; X < b; ++X)
+#define pii pair<int, int>
+#define pll pair<ll, ll>
+#define pld pair<ld, ld>
+#define ld long double
+#define F first
+#define S second
+
+pii operator + (const pii &p1, const pii &p2) { return make_pair(p1.F + p2.F, p1.S + p2.S); }
+pii operator - (const pii &p1, const pii &p2) { return make_pair(p1.F - p2.F, p1.S - p2.S); }
+pll operator + (const pll &p1, const pll &p2) { return make_pair(p1.F + p2.F, p1.S + p2.S); }
+pll operator - (const pll &p1, const pll &p2) { return make_pair(p1.F - p2.F, p1.S - p2.S); }
+
+template<class T> bool chmin(T &a, T b) { return (b < a && (a = b, true)); }
+template<class T> bool chmax(T &a, T b) { return (a < b && (a = b, true)); }
+
+#define lpos pos << 1
+#define rpos pos << 1 | 1
+ 
+template<typename A, typename B> ostream& operator<<(ostream &os, const pair<A, B> &p) { return os << '(' << p.first << "," << p.second << ')'; }
+template<typename A> ostream& operator << (ostream &os, const vector<A> &p) { for(const auto &a : p) os << a << " "; os << '\n'; return os; }
+ 
+const int MAXN = 2e5 + 5, MOD = 998244353, IINF = 1e9 + 7, MOD2 = 1000000007;
+const double eps = 1e-9;
+const ll LINF = 1e18L + 5;
+const int B = 320;
+
+// mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
+// int get_rand(int l, int r){ return uniform_int_distribution<int>(l, r)(rng); }
+ 
+ll fpow(ll x, ll exp, ll mod = LLONG_MAX){ ll res = 1; while(exp){ if(exp & 1) res = res * x % mod; x = x * x % mod; exp >>= 1;} return res; }
+
+struct Manacher {
+    string s;
+    vector<int> p; // radius of palindromes
+    Manacher(string _s) {
+        s = "$";
+        for (char &c : _s) s += string(1, c) + "$";
+        int n = s.size();
+        p.resize(n);
+        p[0] = 0;
+        int rmx = 0;
+        rep (i, 1, n) {
+            if (i > rmx + p[rmx]) {
+                p[i] = 0;
+                int l = i - p[i], r = i + p[i];
+                while (l - 1 >= 0 && r + 1 < n && s[l - 1] == s[r + 1]) {
+                    l--, r++, p[i]++;
+                }
+                rmx = i;
+            } else {
+                int j = rmx - (i - rmx);
+                if (j - p[j] > rmx - p[rmx]) p[i] = p[j];
+                else if (j - p[j] < rmx - p[rmx]) p[i] = j - (rmx - p[rmx]);
+                else {
+                    p[i] = p[j];
+                    int l = i - p[i], r = i + p[i];
+                    while (l - 1 >= 0 && r + 1 < n && s[l - 1] == s[r + 1]) {
+                        l--, r++, p[i]++;
+                    }
+                    if (i + p[i] > rmx + p[rmx]) rmx = i;
+                }
+            }
+        }
+    }
+};
+ 
+void solve(){
+    string s; cin >> s;
+    Manacher M(s);
+    int mx = 0, id = 0;
+    rep (i, 0, M.s.size()) {
+        if (chmax(mx, M.p[i] / 2 * 2 + (i & 1))) {
+            id = i;
+        }
+    }
+    rep (i, id - M.p[id], id + M.p[id] + 1) if (M.s[i] != '$') {
+        cout << M.s[i];
+    }
+}
+ 
+int main() {
+    ZTMYACANESOCUTE;
+    int t = 1;
+    // cin >> t;
+    while(t--){
+        solve();
+    }
+}

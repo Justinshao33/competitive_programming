@@ -1,0 +1,1 @@
+{"name":"Local: ioic_30","url":"/home/justinshao/competitive_programming/practice/ioic_30.cpp","tests":[{"id":1728668216587,"input":"2 2\n00","output":"7"},{"id":1728668229378,"input":"4 2\n0101\n","output":"52"}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"/home/justinshao/competitive_programming/practice/ioic_30.cpp","group":"local","local":true}

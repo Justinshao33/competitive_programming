@@ -1,0 +1,1 @@
+{"name":"Local: G","url":"/home/justinshao/competitive_programming/practice/G.cpp","tests":[{"id":1748696395891,"input":"5\n3 2 2 1\n5 2 8 3\n1 2 2 1\n60 191 11 35\n40 191 71 226\n","output":"3\n5\n1\n226\n4\n"}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"/home/justinshao/competitive_programming/practice/G.cpp","group":"local","local":true}

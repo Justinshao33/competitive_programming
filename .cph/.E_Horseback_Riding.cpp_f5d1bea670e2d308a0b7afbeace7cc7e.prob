@@ -1,0 +1,1 @@
+{"name":"Local: E_Horseback_Riding","url":"/home/justinshao/competitive_programming/practice/E_Horseback_Riding.cpp","tests":[{"id":1736484138468,"input":"2\na5\nf1","output":"4\na5-b3\nb3-a1\nf1-d2\nd2-b1"}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"/home/justinshao/competitive_programming/practice/E_Horseback_Riding.cpp","group":"local","local":true}
