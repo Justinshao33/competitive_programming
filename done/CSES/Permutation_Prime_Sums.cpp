@@ -53,9 +53,59 @@ mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
  
 ll fpow (ll x, ll exp, ll mod = LLONG_MAX) { if (x == 0) return 0; ll res = 1; while (exp > 0) { if (exp & 1) res = res * x % mod; x = x * x % mod; exp >>= 1; } return res; }
 
+const int C = 2e5 + 5;
+
+int mo[C], lp[C], phi[C], isp[C]; 
+vector<int> prime;
+
+void sieve() {
+    mo[1] = phi[1] = 1;
+    rep (i, 1, C) lp[i] = 1;
+    rep (i, 2, C) {
+        if (lp[i] == 1) {
+            lp[i] = i;
+            prime.pb(i);
+            isp[i] = 1;
+            mo[i] = -1;
+            phi[i] = i - 1;
+        }
+        for (int p : prime) {
+            if (i * p >= C) break;
+            lp[i * p] = p;
+            if (i % p == 0) {
+                phi[p * i] = phi[i] * p;
+                break;
+            }
+            phi[i * p] = phi[i] * (p - 1);
+            mo[i * p] = mo[i] * mo[p];
+        }
+    }
+}
+
 void solve() {
+    sieve();
     int n; cin >> n;
-    
+    vector<int> p(n), p2(n);
+    iota(all(p), 1);
+    vector<bool> vis(n + 1, 0);
+    for (int i = n - 1; i >= 0; --i) {
+        int pr = -1;
+        rep (j, 1, n + 1) {
+            if (isp[p[i] + j]) {
+                pr = p[i] + j;
+                break;
+            }
+        }
+        assert(pr != -1);
+        while (i >= 0 && pr - p[i] > 0 && pr - p[i] <= n && !vis[pr - p[i]]) {
+            p2[i] = pr - p[i];
+            vis[pr - p[i]] = 1;
+            i--;
+        }
+        i++;
+    }
+    rep (i, 0, n) cout << p[i] << " \n" [i == n - 1];
+    rep (i, 0, n) cout << p2[i] << " \n" [i == n - 1];
 }
  
 int main() {
