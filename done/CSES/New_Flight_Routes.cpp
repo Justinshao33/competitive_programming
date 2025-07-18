@@ -157,18 +157,14 @@ void solve() {
         }
     }
     work();
-    vector<int> dup;
-    for (int u : S) if (T.count(u)) dup.pb(u);
-    for (int x : dup) {
-        S.erase(x);
-        T.erase(x);
-    }
-    for (auto it = S.begin(), it2 = T.begin(); it != S.end() || it2 != T.end();) {
-        if (it == S.end()) ans.pb({id[*it2], id[*S.begin()]});
-        else if (it2 == T.end()) ans.pb({id[*T.begin()], id[*it]});
-        else ans.pb({id[*it2], id[*it]});
-        if (it != S.end()) it++;
-        if (it2 != T.end()) it2++;
+    if (*S.begin() != *T.begin()) {
+        for (auto it = S.begin(), it2 = T.begin(); it != S.end() || it2 != T.end();) {
+            if (it == S.end()) ans.pb({id[*it2], id[*S.begin()]});
+            else if (it2 == T.end()) ans.pb({id[*T.begin()], id[*it]});
+            else ans.pb({id[*it2], id[*it]});
+            if (it != S.end()) it++;
+            if (it2 != T.end()) it2++;
+        }
     }
     cout << ssize(ans) << '\n';
     for (auto [x, y] : ans) cout << x + 1 << ' ' << y + 1 << '\n';
