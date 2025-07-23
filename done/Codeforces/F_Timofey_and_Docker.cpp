@@ -65,14 +65,15 @@ void solve() {
         cnt[r + 1]--;
     }
     rep (i, 1, mx + 1) cnt[i] += cnt[i - 1];
-    int upp = *max_element(all(cnt)), ans = n, ok = 0;
+    int upp = *max_element(all(cnt));
+    ll ans = LINF, ok = 0;
     vector<int> cost(n, 0);
     string aim = "docker";
     rep (i, 0, n - 5) {
         rep (j, 0, 6) if (s[i + j] != aim[j]) cost[i]++;
         if (cost[i] == 0) ok++;
     }
-    rep (i, 1, ok + 1) if (cnt[i] == upp) {
+    rep (i, 0, ok + 1) if (cnt[i] == upp) {
         chmin(ans, ok - i);
     }
     int k = -1;
@@ -84,8 +85,8 @@ void solve() {
         cout << ans << '\n';
         return;
     }
-    auto calc = [&](int p) -> pii {
-        vector<pii> dp(n + 1, {IINF, 0});
+    auto calc = [&](int p) -> pll {
+        vector<pll> dp(n + 1, {LINF, 0});
         dp[0] = {0, 0};
         rep (i, 0, n) {
             chmin(dp[i + 1], dp[i]);
@@ -103,7 +104,7 @@ void solve() {
         else r = mid;
     }
     auto dp = calc(l);
-    chmin(ans, dp.fi + l * k);
+    chmin(ans, dp.fi + 1LL * l * k);
     cout << ans << '\n';
 }
  
