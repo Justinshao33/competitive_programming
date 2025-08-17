@@ -1,1 +1,1 @@
-{"name":"Local: a","url":"/home/justinshao/competitive_programming/practice/a.cpp","tests":[],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"/home/justinshao/competitive_programming/practice/a.cpp","group":"local","local":true}
+{"name":"Local: a","url":"/home/justinshao/competitive_programming/practice/a.cpp","tests":[{"id":1755269368056,"input":"5\n1 2\n2 3\n3 4\n4 5","output":""}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"/home/justinshao/competitive_programming/practice/a.cpp","group":"local","local":true}
