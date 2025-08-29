@@ -53,13 +53,36 @@ const int B = 320;
 ll fpow (ll x, ll exp, ll mod = LLONG_MAX) { if (x == 0) return 0; ll res = 1; while (exp > 0) { if (exp & 1) res = res * x % mod; x = x * x % mod; exp >>= 1; } return res; }
 
 void solve() {
-    
+    int n; cin >> n;
+    vector<ll> a(n);
+    rep (i, 0, n) cin >> a[i];
+    ll ans = 0;
+    for (int i = 0; i + 1 < n; i += 2) {
+        if (a[i] > a[i + 1]) {
+            ans += a[i] - a[i + 1];
+            a[i] = a[i + 1];
+        }
+    }
+    for (int i = 1; i + 1 < n; i += 2) {
+        if (a[i] < a[i + 1]) {
+            ans += a[i + 1] - a[i];
+            a[i + 1] = a[i];
+        }
+    }
+    for (int i = 1; i + 1 < n; i += 2) {
+        if (a[i] < a[i - 1] + a[i + 1]) {
+            ll dif = a[i - 1] + a[i + 1] - a[i];
+            ans += dif;
+            a[i + 1] = max(0LL, a[i + 1] - dif);
+        }
+    }
+    cout << ans << '\n';
 }
-
+ 
 int main() {
     ZTMYACANESOCUTE;
     int T = 1;
-    // cin >> T;
+    cin >> T;
     while (T--) {
         solve();
     }

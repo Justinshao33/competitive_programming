@@ -52,14 +52,59 @@ const int B = 320;
  
 ll fpow (ll x, ll exp, ll mod = LLONG_MAX) { if (x == 0) return 0; ll res = 1; while (exp > 0) { if (exp & 1) res = res * x % mod; x = x * x % mod; exp >>= 1; } return res; }
 
-void solve() {
-    
+void sw(int x) {
+    cout << "swap " << x << '\n';
 }
 
+int th(int x) {
+    cout << "throw " << x << '\n';
+    int y; cin >> y;
+    return y;
+}
+
+void solve() {
+    int n; cin >> n;
+    vector<int> a(n + 3, 0), b(n + 1, -1);
+    b[0] = 0;
+    for (int i = n; i > 0; --i) {
+        if (a[i + 1] == a[i + 2]) {
+            a[i] = a[i + 1] + 1;
+        } else {
+            a[i] = th(i);
+            if (a[i] == a[i + 1] + 1) b[i] = 1;
+            else b[i] = 2;
+        }
+    }
+    for (int i = n - 1; i > 0; --i) {
+        if (b[i] == -1) {
+            if (a[i + 1] != a[i + 2]) {
+                a[i] = th(i);
+                if (a[i] == a[i + 1] + 1) b[i] = 1;
+                else b[i] = 2;
+            } else {
+                sw(i);
+                swap(a[i], a[i + 1]);
+                a[i + 1] = th(i + 1);
+                a[i] = a[i + b[i + 1]] + 1;
+                if (a[i + 1] == a[i + 2] + 1) b[i] = 1;
+                else b[i] = 2;
+            }
+        } else {
+            a[i] = a[i + b[i]] + 1;
+        }
+    }
+    sw(n - 1);
+    swap(a[n - 1], a[n]);
+    a[n - 1] = th(n - 1);
+    b[n] = a[n - 1] == 1 ? 2 : 1;
+    cout << "! ";
+    rep (i, 1, n + 1) cout << b[i] << " \n" [i == n];
+}
+ 
 int main() {
-    ZTMYACANESOCUTE;
+    // ZTMYACANESOCUTE;
     int T = 1;
-    // cin >> T;
+    cin >> T;
     while (T--) {
         solve();
     }

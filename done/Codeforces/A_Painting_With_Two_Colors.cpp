@@ -53,13 +53,22 @@ const int B = 320;
 ll fpow (ll x, ll exp, ll mod = LLONG_MAX) { if (x == 0) return 0; ll res = 1; while (exp > 0) { if (exp & 1) res = res * x % mod; x = x * x % mod; exp >>= 1; } return res; }
 
 void solve() {
-    
+    int n, a, b; cin >> n >> a >> b;
+    if (b >= a && n % 2 == b % 2) {
+        cout << "YES\n";
+        return;
+    }
+    if (n % 2 == a % 2 && b % 2 == a % 2) {
+        cout << "YES\n";
+        return;
+    }
+    cout << "NO\n";
 }
-
+ 
 int main() {
     ZTMYACANESOCUTE;
     int T = 1;
-    // cin >> T;
+    cin >> T;
     while (T--) {
         solve();
     }

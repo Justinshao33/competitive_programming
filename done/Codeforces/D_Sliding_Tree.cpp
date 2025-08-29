@@ -53,13 +53,64 @@ const int B = 320;
 ll fpow (ll x, ll exp, ll mod = LLONG_MAX) { if (x == 0) return 0; ll res = 1; while (exp > 0) { if (exp & 1) res = res * x % mod; x = x * x % mod; exp >>= 1; } return res; }
 
 void solve() {
-    
+    int n; cin >> n;
+    vector<vector<int>> adj(n);
+    rep (i, 0, n - 1) {
+        int a, b; cin >> a >> b;
+        a--, b--;
+        adj[a].pb(b);
+        adj[b].pb(a);
+    }
+    if (n <= 2) {
+        cout << -1 << '\n';
+        return;
+    }
+    int cnt = 0;
+    rep (i, 0, n) cnt += (ssize(adj[i]) == 1);
+    if (cnt == 2) {
+        cout << -1 << '\n';
+        return;
+    }
+    vector<int> dep(n, 0);
+    auto dfs = [&](auto self, int u, int pa) -> void {
+        for (int v : adj[u]) {
+            if (v == pa) continue;
+            dep[v] = dep[u] + 1;
+            self(self, v, u);
+        }
+    };
+    dep[0] = 0;
+    dfs(dfs, 0, -1);
+    int rt = max_element(all(dep)) - dep.begin();
+    dep[rt] = 0;
+    dfs(dfs, rt, -1);
+    int rt2 = max_element(all(dep)) - dep.begin();
+    while (true) {
+        int p = rt2;
+        for (int v : adj[rt2]) {
+            if (dep[v] == dep[rt2] - 1) {
+                rt2 = v;
+                break;
+            }
+        }
+        if (ssize(adj[rt2]) > 2) {
+            int a = p, b = rt2, c;
+            for (int v : adj[rt2]) {
+                if (v != p && dep[v] != dep[rt2] - 1) {
+                    c = v;
+                    break;
+                }
+            }
+            cout << a + 1 << ' ' << b + 1 << ' ' << c + 1 << '\n';
+            return;
+        }
+    }
 }
-
+ 
 int main() {
     ZTMYACANESOCUTE;
     int T = 1;
-    // cin >> T;
+    cin >> T;
     while (T--) {
         solve();
     }

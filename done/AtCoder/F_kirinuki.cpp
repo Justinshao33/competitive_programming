@@ -2,7 +2,7 @@
 #define _GLIBCXX_DEBUG 1
 #endif
 #pragma GCC optimize("O3,unroll-loops")
-// #pragma GCC target("avx,popcnt,sse4,abm")
+#pragma GCC target("avx,popcnt,sse4,abm")
 #include<bits/stdc++.h>
 using namespace std;
 using ll  = long long;
@@ -53,9 +53,41 @@ const int B = 320;
 ll fpow (ll x, ll exp, ll mod = LLONG_MAX) { if (x == 0) return 0; ll res = 1; while (exp > 0) { if (exp & 1) res = res * x % mod; x = x * x % mod; exp >>= 1; } return res; }
 
 void solve() {
-    
+    int n, m, k; cin >> n >> m >> k;
+    vector<string> G(n);
+    rep (i, 0, n) cin >> G[i];
+    vector<int> a(m + 1, 0);
+    vector dif(n + 2, vector<int>(m + 3, 0));
+    rep (i, 0, n) {
+        rep (j, 0, m) {
+            if (G[i][j] == '#') a[j] = 0;
+            else a[j]++;
+        }
+        vector<int> st;
+        rep (j, 0, m + 1) {
+            while (!st.empty() && a[st.back()] >= a[j]) {
+                int x = st.back(); st.pop_back();
+                int l = x - (st.empty() ? -1 : st.back()),
+                    r = j - x;
+                if (l > r) swap(l, r);
+                dif[a[x]][1]++;
+                dif[a[x]][l + 1]--;
+                dif[a[x]][r + 1]--;
+                dif[a[x]][l + r + 1]++;
+            }
+            st.push_back(j);
+        }
+    }
+    for (int i = n; i > 0; --i) {
+        rep (j, 1, m + 1) dif[i][j] += dif[i][j - 1];
+        rep (j, 1, m + 1) dif[i][j] += dif[i][j - 1];
+        rep (j, 1, m + 1) dif[i][j] += dif[i + 1][j];
+    }
+    ll ans = 0;
+    rep (i, 1, n + 1) rep (j, 1, m + 1) if (i * j <= k) ans += dif[i][j];
+    cout << ans << '\n';
 }
-
+ 
 int main() {
     ZTMYACANESOCUTE;
     int T = 1;

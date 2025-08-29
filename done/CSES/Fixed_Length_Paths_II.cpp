@@ -2,7 +2,7 @@
 #define _GLIBCXX_DEBUG 1
 #endif
 #pragma GCC optimize("O3,unroll-loops")
-// #pragma GCC target("avx,popcnt,sse4,abm")
+#pragma GCC target("avx,popcnt,sse4,abm")
 #include<bits/stdc++.h>
 using namespace std;
 using ll  = long long;
@@ -53,9 +53,80 @@ const int B = 320;
 ll fpow (ll x, ll exp, ll mod = LLONG_MAX) { if (x == 0) return 0; ll res = 1; while (exp > 0) { if (exp & 1) res = res * x % mod; x = x * x % mod; exp >>= 1; } return res; }
 
 void solve() {
-    
+    int n, L, R; cin >> n >> L >> R;
+    vector<vector<int>> adj(n);
+    rep (i, 0, n - 1) {
+        int a, b; cin >> a >> b;
+        a--, b--;
+        adj[a].push_back(b);
+        adj[b].push_back(a);
+    }
+    vector<bool> vis(n, 0);
+    vector<int> sz(n, 0);
+    auto dfs_sz = [&](auto self, int u, int pa) -> int {
+        sz[u] = 1;
+        for (int v : adj[u]) {
+            if (v == pa || vis[v]) continue;
+            sz[u] += self(self, v, u);
+        }
+        return sz[u];
+    };
+    auto dfs_cen = [&](auto self, int u, int pa, int tar) -> int {
+        for (int v : adj[u]) {
+            if (v == pa || vis[v] || sz[v] < tar) continue;
+            return self(self, v, u, tar);
+        }
+        return u;
+    };
+    vector<int> cnt(n + 1, 0), tot(n + 1, 0);
+    tot[0] = 1;
+    int submx = 0, allmx = 0;
+    auto calc = [&](auto self, int u, int pa, int dep) -> void {
+        if (dep > R) return;
+        chmax(submx, dep);
+        cnt[dep]++;
+        for (int v : adj[u]) {
+            if (v == pa || vis[v]) continue;
+            self(self, v, u, dep + 1);
+        }
+    };
+    ll ans = 0;
+    auto dc = [&](auto self, int u) -> void {
+        int cen = dfs_cen(dfs_cen, u, -1, dfs_sz(dfs_sz, u, -1) >> 1);
+        vis[cen] = 1;
+        allmx = 0;
+        ll pre = L == 1;
+        for (int v : adj[cen]) {
+            if (vis[v]) continue;
+            submx = 0;
+            calc(calc, v, cen, 1);
+            ll psum = pre;
+            for (int d = 1; d <= submx; d++) {
+                ans += psum * cnt[d];
+                // L <= x + d <= R
+                // L - d <= x <= R - d
+                if (R - d >= 0) psum -= tot[R - d];
+                if (L - d - 1 >= 0) psum += tot[L - d - 1];
+            }
+            for (int d = L - 1; d <= R - 1 && d <= submx; d++) {
+                pre += cnt[d];
+            }
+            rep (d, 0, submx + 1) {
+                tot[d] += cnt[d];
+                cnt[d] = 0;
+            }
+            chmax(allmx, submx);
+        }
+        fill(tot.begin() + 1, tot.begin() + allmx + 1, 0);
+        for (int v : adj[cen]) {
+            if (vis[v]) continue;
+            self(self, v);
+        }
+    };
+    dc(dc, 0);
+    cout << ans << '\n';
 }
-
+ 
 int main() {
     ZTMYACANESOCUTE;
     int T = 1;
