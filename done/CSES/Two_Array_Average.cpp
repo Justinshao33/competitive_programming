@@ -2,7 +2,7 @@
 #define _GLIBCXX_DEBUG 1
 #endif
 #pragma GCC optimize("O3,unroll-loops")
-// #pragma GCC target("avx,popcnt,sse4,abm")
+#pragma GCC target("avx,popcnt,sse4,abm")
 #include<bits/stdc++.h>
 using namespace std;
 using ll  = long long;
@@ -52,10 +52,9 @@ const int B = 320;
  
 ll fpow (ll x, ll exp, ll mod = LLONG_MAX) { if (x == 0) return 0; ll res = 1; while (exp > 0) { if (exp & 1) res = res * x % mod; x = x * x % mod; exp >>= 1; } return res; }
 
-// https://github.com/warner1129/CompetitiveProgrammingCodebook/tree/master/code/Geometry
 using numbers::pi;
 template<class T> inline constexpr T eps = numeric_limits<T>::epsilon() * 1E6;
-using Real = long double;
+using Real = long long;
 
 struct Pt {
     Real x{}, y{};
@@ -94,6 +93,7 @@ struct Line {
 };
 
 int PtSide(Pt p, Line L) {
+    return sgn(ori(L.a, L.b, p)); // for int
     return sgn(ori(L.a, L.b, p) / abs(L.a - L.b));
 }
 bool PtOnSeg(Pt p, Line L) {
@@ -123,65 +123,78 @@ bool strictInter(Line l, Line m) {
     return la * lb < 0 && ma * mb < 0;
 }
 
-struct info {
-    vector<Pt> v; int id; Real dis;
-};
+vector<Pt> BuildHull(vector<Pt> pt) {
+    sort(all(pt));
+    pt.erase(unique(all(pt)), pt.end());
+    if (pt.size() <= 2) return pt;
+    vector<Pt> hull;
+    int sz = 1;
+    rep (t, 0, 2) {
+        rep (i, t, ssize(pt)) {
+            while (ssize(hull) > sz && ori(hull.end()[-2], pt[i], hull.back()) >= 0)
+                hull.pop_back();
+            hull.pb(pt[i]);
+        }
+        sz = ssize(hull);
+        reverse(all(pt));
+    }
+    hull.pop_back();
+    return hull;
+}
+
+// P, Q, R(return) are counterclockwise order convex polygon
+vector<Pt> Minkowski(vector<Pt> P, vector<Pt> Q) {
+    assert(P.size() >= 2 && Q.size() >= 2);
+    auto cmp = [&](Pt a, Pt b) {
+        return Pt{a.y, a.x} < Pt{b.y, b.x};
+    };
+    auto reorder = [&](auto &R) {
+        rotate(R.begin(), min_element(all(R), cmp), R.end());
+        R.push_back(R[0]), R.push_back(R[1]);
+    };
+    const int n = P.size(), m = Q.size();
+    reorder(P), reorder(Q);
+    vector<Pt> R;
+    for (int i = 0, j = 0, s; i < n || j < m; ) {
+        R.push_back(P[i] + Q[j]);
+        s = sgn((P[i + 1] - P[i]) ^ (Q[j + 1] - Q[j]));
+        if (s >= 0) i++;
+        if (s <= 0) j++;
+    }
+    return R; // May not be a strict convexhull
+}
 
 void solve() {
-    int n, q; cin >> n >> q;
-    vector<Pt> gon;
-    rep (i, 0, n) {
-        Real x, y; cin >> x >> y;
-        while (gon.size() > 1 && sgn(ori(gon.end()[-2], gon.back(), Pt{x, y})) == 0) gon.pop_back();
-        gon.push_back(Pt{x, y});
+    int n; cin >> n;
+    vector<ll> a(n + 1), b(n + 1);
+    rep (i, 1, n + 1) {
+        cin >> a[i];
+        a[i] += a[i - 1];
     }
-    while (gon.size() > 2 && sgn(ori(gon[1], gon[0], gon.back())) == 0) gon.erase(gon.begin());
-    n = ssize(gon);
-    Real A = 0;
-    rep (i, 0, n) A += gon[(i + 1) % n] ^ gon[i];
-    if (A < 0) reverse(all(gon));
-    while (q--) {
-        Pt A, B; cin >> A.x >> A.y >> B.x >> B.y;
-        if (A.x > B.x || (A.x == B.x && A.y > B.y)) swap(A, B);
-        Pt DIR = unit(B - A);
-        A = A - DIR * 20000000, B = B + DIR * 20000000;
-        Line li{A, B};
-        vector<info> event;
-        rep (i, 0, n) {
-            Line cur{gon[i], gon[(i + 1) % n]};
-            if (!isInter(li, cur)) continue;
-            if ((li.dir() ^ cur.dir()) == 0) { // parallel
-                if (abs(cur.a - A) < abs(cur.b - A)) event.push_back({{cur.a, cur.b}, i, abs(cur.a - A)});
-                else event.push_back({{cur.b, cur.a}, i, abs(cur.b - A)});
-            } else {
-                Pt p = LineInter(li, cur);
-                event.push_back({{p}, i, abs(p - A)});
-            }
+    rep (i, 1, n + 1) {
+        cin >> b[i];
+        b[i] += b[i - 1];
+    }
+    vector<Pt> Pa, Pb;
+    rep (i, 1, n + 1) {
+        Pa.push_back({i, a[i]});
+        Pb.push_back({i, b[i]});
+    }
+    Pa = BuildHull(Pa);
+    Pb = BuildHull(Pb);
+    auto c = Minkowski(Pa, Pb);
+    ll X = 1, Y = 0;
+    for (auto [x, y] : c) {
+        // y / x > Y / X
+        if (y * X > x * Y) {
+            X = x, Y = y;
         }
-        sort(all(event), [&](const auto &a, const auto &b) {
-            if (fabs(abs(a.v[0] - b.v[0])) < eps<Real>) return ssize(a.v) < ssize(b.v);
-            return a.v[0] < b.v[0];
-        });
-        bool isin = false;
-        Real pre = 0, ans = 0;
-        for (auto &[v, id, dis] : event) {
-            assert(dis >= pre);
-            if (isin) ans += dis - pre;
-            bool f = PtOnSeg(gon[id], li), g = PtOnSeg(gon[(id + 1) % n], li);
-            if ((!f && !g) || (f && !g)) isin = !isin;
-            if (f && !g && PtSide(gon[(id + 1) % n], li) == PtSide(gon[(id - 1 + n) % n], li)) {
-                assert(PtSide(gon[(id + 1) % n], li) != 0);    
-                isin = !isin;
-            }
-            if (ssize(v) == 2) {
-                assert(abs(v[0] - A) < abs(v[1] - A));
-                ans += abs(v[0] - v[1]);
-                pre = abs(v[1] - A);
-            } else {
-                pre = dis;
-            }
+    }
+    rep (i, 1, n + 1) {
+        if (X - i >= 1 && a[i] + b[X - i] == Y) {
+            cout << i << ' ' << X - i << '\n';
+            return;
         }
-        cout << fixed << setprecision(15) << ans << '\n';
     }
 }
  

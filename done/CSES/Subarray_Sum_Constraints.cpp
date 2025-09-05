@@ -2,7 +2,7 @@
 #define _GLIBCXX_DEBUG 1
 #endif
 #pragma GCC optimize("O3,unroll-loops")
-// #pragma GCC target("avx,popcnt,sse4,abm")
+#pragma GCC target("avx,popcnt,sse4,abm")
 #include<bits/stdc++.h>
 using namespace std;
 using ll  = long long;
@@ -52,14 +52,45 @@ const int B = 320;
  
 ll fpow (ll x, ll exp, ll mod = LLONG_MAX) { if (x == 0) return 0; ll res = 1; while (exp > 0) { if (exp & 1) res = res * x % mod; x = x * x % mod; exp >>= 1; } return res; }
 
-void solve() {
-    
+int pa[MAXN];
+ll w[MAXN];
+
+int find(int x) {
+    if (pa[x] == x) return pa[x];
+    int root = find(pa[x]);
+    w[x] += w[pa[x]];
+    return pa[x] = root;
 }
 
+bool merge(int a, int b, ll val) {
+    int ra = find(a), rb = find(b);
+    if (ra == rb) return w[a] - w[b] == val;
+    pa[rb] = ra;
+    w[rb] = w[a] - w[b] - val;
+    return true; 
+}
+
+void solve() {
+    int n, m; cin >> n >> m;
+    rep (i, 0, n + 1) pa[i] = i;
+    rep (i, 0, m) {
+        int a, b, c; cin >> a >> b >> c;
+        // p[b] - p[a - 1] = c;
+        if (!merge(b, a - 1, c)) {
+            cout << "NO\n";
+            return;
+        }
+    }
+    cout << "YES\n";
+    rep (i, 1, n + 1) merge(i, 0, w[i]);
+    for (int i = n; i > 0; --i) w[i] -= w[i - 1];
+    rep (i, 1, n + 1) cout << w[i] << " \n" [i == n];
+}
+ 
 int main() {
     ZTMYACANESOCUTE;
     int T = 1;
-    cin >> T;
+    // cin >> T;
     while (T--) {
         solve();
     }

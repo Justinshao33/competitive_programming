@@ -2,7 +2,7 @@
 #define _GLIBCXX_DEBUG 1
 #endif
 #pragma GCC optimize("O3,unroll-loops")
-// #pragma GCC target("avx,popcnt,sse4,abm")
+#pragma GCC target("avx,popcnt,sse4,abm")
 #include<bits/stdc++.h>
 using namespace std;
 using ll  = long long;
@@ -52,10 +52,28 @@ const int B = 320;
  
 ll fpow (ll x, ll exp, ll mod = LLONG_MAX) { if (x == 0) return 0; ll res = 1; while (exp > 0) { if (exp & 1) res = res * x % mod; x = x * x % mod; exp >>= 1; } return res; }
 
-void solve() {
-    
+ll exgcd(ll a, ll b, ll &x, ll &y){
+    if(b == 0){
+        x = 1, y = 0;
+        return a;
+    }
+    ll g = exgcd(b, a % b, y, x);
+    y -= a / b * x;
+    return g;
 }
 
+void solve() {
+    int a, b, x; cin >> a >> b >> x;
+    if (x > a) {
+        cout << "NO\n";
+        return;
+    }
+    ll X, Y;
+    ll g = exgcd(a, b, X, Y);
+    if (x % g) cout << "NO\n";
+    else cout << "YES\n";
+}
+ 
 int main() {
     ZTMYACANESOCUTE;
     int T = 1;
