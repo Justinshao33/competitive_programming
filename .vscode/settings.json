@@ -87,7 +87,8 @@
         "algorithm": "cpp",
         "source_location": "cpp",
         "numbers": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "dynamic_bitset": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled",
     "cph.general.defaultLanguage": "cpp",
