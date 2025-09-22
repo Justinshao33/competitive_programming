@@ -1,5 +1,5 @@
 #pragma GCC optimize("O3,unroll-loops")
-#pragma GCC target("avx,popcnt,sse4,abm")
+// #pragma GCC target("avx,popcnt,sse4,abm")
 #include<bits/stdc++.h>
 using namespace std;
 using ll  = long long;
@@ -123,12 +123,16 @@ void solve() {
     int q; cin >> q;
     vector<array<int, 5>> cons(q);
     for (auto &[t, u, i, v, j] : cons) cin >> t >> u >> i >> v >> j;
-    ll ans = IINF;
+    int ans = IINF;
+    vector mp(n, vector (16, vector<int>(2, 0)));
+    rep (i, 0, n) rep (j, 0, 16) rep (k, 0, 2) {
+        mp[i][j][k] = i * 16 + j + k * n * 16;;
+    }
     rep (bit, 0, 1 << q) {
-        Dinic<ll> G(n * 16 * 2 + 2);
+        Dinic<int> G(n * 16 * 2 + 2);
         int s = n * 16 * 2, t = s + 1;
         auto id = [&](int i, int j, int b) -> int {
-            return i * 16 + j + b * n * 16;
+            return mp[i][j][b];
         };
         rep (i, 0, n) {
             rep (j, 0, 16) G.add_edge(id(i, j, 0), id(i, j, 1), IINF);
@@ -157,8 +161,7 @@ void solve() {
             G.add_edge(id(u, i, 1), id(v, i, 0), 1);
             G.add_edge(id(v, i, 1), id(u, i, 0), 1);
         }
-        ll f = G.flow(s, t);
-        debug(bit, f);
+        int f = G.flow(s, t);
         chmin(ans, f);
     }
     cout << (ans == IINF ? -1 : ans / 2) << '\n';
