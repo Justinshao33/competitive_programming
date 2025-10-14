@@ -119,7 +119,6 @@ void solve() {
             d[j] = ranges::max(dep | views::take(ssize(g)));
             rem = std::max(rem, len - 1 + std::max(D, d[j] + 1));
             if (j) {
-                rem = std::max(rem, len - 1 + 1 + d[j] + d[j - 1]);
                 if (j != len - 1) rem = std::max(rem, d[j] + j + mx + 2);
                 rem = std::max(rem, len + d[j] - j + mx2 + 2 - 1);
             }
