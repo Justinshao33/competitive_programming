@@ -1,3 +1,4 @@
+#pragma GCC optimize("O3,unroll-loops")
 #include <bits/stdc++.h>
 
 using namespace std;
@@ -35,7 +36,7 @@ struct SparseTable{
 
 const int MAXN = 1e5 + 5;
 
-int tree[MAXN << 2], tag[MAXN << 2];
+i64 tree[MAXN << 2], tag[MAXN << 2];
 
 #define lpos pos << 1
 #define rpos pos << 1 | 1
@@ -74,10 +75,6 @@ i64 query(int pos, int l, int r, int ql, int qr) {
     return res;
 }
 
-const int C = 1e6 + 5;
-
-vector<array<int, 3>> ope[C], que[C];
-
 void solve() {
     int n, q; cin >> n >> q;
     vector<int> a(n);
@@ -86,48 +83,60 @@ void solve() {
         return gcd(x, y);
     };
     SparseTable<int> sp(a, F);
-    vector<int> tmp, tmp2;
+    vector<array<int, 4>> info, info2;
+    vector<int> dic;
     rep (i, 0, n) {
         int R = i;
         while (R >= 0) {
             int g = sp.query(R, i + 1);
-            tmp.push_back(g);
             int l = -1, r = R;
             while (r - l > 1) {
                 int mid = l + r >> 1;
                 if (sp.query(mid, i + 1) == g) r = mid;
                 else l = mid;
             }
-            ope[g].push_back({i, r, R}); // R, ml, mr
+            info.push_back({g, i, r, R}); // R, ml, mr
             R = r - 1;
         }
     }
-    for (int x : tmp) sort(all(ope[x]));
     rep (i, 0, q) {
         int l, r, d; cin >> l >> r >> d;
         l--, r--;
-        que[d].push_back({r, l, i});
-        tmp2.push_back(d);
+        dic.push_back(d);
+        info2.push_back({d, r, l, i});
     }
-    for (int x : tmp2) sort(all(que[x]));
+    sort(all(dic));
+    dic.erase(unique(all(dic)), dic.end());
+    auto get = [&](int x) -> int {
+        int xx = lower_bound(all(dic), x) - dic.begin();
+        if (xx >= ssize(dic) || dic[xx] != x) return -1;
+        return xx;
+    };
+    vector<vector<array<int, 3>>> ope(ssize(dic)), que(ssize(dic));
+    for (const auto &[g, i, r, R] : info) {
+        int id = get(g);
+        if (id == -1) continue;
+        ope[id].push_back({i, r, R});
+    }
+    for (const auto &[d, r, l, i] : info2) que[get(d)].push_back({r, l, i});
     vector<i64> ans(q);
-    for (int d : tmp2) {
-        for (int ptr = 0; auto [R, L, id] : que[d]) {
+    rep (d, 0, ssize(dic)) {
+        sort(all(ope[d]));
+        sort(all(que[d]));
+        for (int ptr = 0; const auto &[R, L, id] : que[d]) {
             while (ptr < ssize(ope[d]) && ope[d][ptr][0] <= R) {
                 mod(1, 0, n - 1, ope[d][ptr][1], ope[d][ptr][2], 1);
                 ptr++;
             }
             ans[id] = query(1, 0, n - 1, L, R);
         }
-        for (int ptr = 0; auto [R, L, id] : que[d]) {
+        for (int ptr = 0; const auto &[R, L, id] : que[d]) {
             while (ptr < ssize(ope[d]) && ope[d][ptr][0] <= R) {
                 mod(1, 0, n - 1, ope[d][ptr][1], ope[d][ptr][2], -1);
                 ptr++;
             }
         }
     }
-    for (int x : tmp) ope[x].clear();
-    for (int x : tmp2) que[x].clear();
     rep (i, 0, q) cout << ans[i] << '\n';
 }
 
@@ -135,7 +144,7 @@ int32_t main() {
     std::ios::sync_with_stdio(false);
     std::cin.tie(nullptr);
 
-    std::freopen("gcdrng.in", "r", stdin);
+    // std::freopen("gcdrng.in", "r", stdin);
 
     int t;
     std::cin >> t;
