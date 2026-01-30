@@ -5,6 +5,9 @@
 // #pragma GCC target("avx,popcnt,sse4,abm")
 #include<bits/stdc++.h>
 using namespace std;
+
+#define int long long
+
 using ll  = long long;
 using ull = unsigned long long;
 using ld = long double;
@@ -12,14 +15,13 @@ using ld = long double;
 #define all(a) (a).begin(), (a).end()
 #define rep(X, a, b) for(int X = a; X < b; ++X)
 using pii = pair<int, int>;
-using pll = pair<ll, ll>;
 using pld = pair<ld, ld>;
 #define fi first
 #define se second
 
 #ifdef LOCAL
 #define ZTMYACANESOCUTE // freopen("in.txt", "r", stdin);
-#define debug(X...) std::cerr << "\e[1;31m" << #X << "\033[0m" << " = ", dbg(X)
+#define debug(...) {cerr << #__VA_ARGS__ << " = "; dbg(__VA_ARGS__);}
 #else
 #define ZTMYACANESOCUTE ios_base::sync_with_stdio(0), cin.tie(0);
 #define debug(...) 6;
@@ -31,8 +33,6 @@ void dbg(T t, U ...u) { cerr << t << ' '; dbg(u...); }
 
 pii operator + (const pii &p1, const pii &p2) { return make_pair(p1.fi + p2.fi, p1.se + p2.se); }
 pii operator - (const pii &p1, const pii &p2) { return make_pair(p1.fi - p2.fi, p1.se - p2.se); }
-pll operator + (const pll &p1, const pll &p2) { return make_pair(p1.fi + p2.fi, p1.se + p2.se); }
-pll operator - (const pll &p1, const pll &p2) { return make_pair(p1.fi - p2.fi, p1.se - p2.se); }
 
 template<class T> bool chmin(T &a, T b) { return (b < a && (a = b, true)); }
 template<class T> bool chmax(T &a, T b) { return (a < b && (a = b, true)); }
@@ -50,29 +50,69 @@ const int B = 320;
 // mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 // int get_rand(int l, int r){ return uniform_int_distribution<int>(l, r)(rng); }
  
-ll fpow (ll x, ll exp, ll mod = LLONG_MAX) { if (x == 0) return 0; ll res = 1; while (exp > 0) { if (exp & 1) res = res * x % mod; x = x * x % mod; exp >>= 1; } return res; }
-
-
+int fpow (int x, int exp, int mod = LLONG_MAX) { if (x == 0) return 0; int res = 1; while (exp > 0) { if (exp & 1) res = res * x % mod; x = x * x % mod; exp >>= 1; } return res; }
 
 void solve() {
     int n; cin >> n;
-    vector<vector<int>> adj(n);
-    rep (i, 1, n) {
-        int p; cin >> p;
-        p--;
-        adj[p].push_back(i);
-    } 
     vector<int> a(n);
-    rep (i, 0, n) cin >> a[i];
-    auto dfs = [&](auto self, int u) -> void {
-
-    };
+    int one = 0, oth = 0;
+    vector<int> id, vis(n, 0);
+    rep (i, 0, n) {
+        cin >> a[i];
+        if (a[i] == 1) {
+            one += 1;
+            vis[i] = 1;
+            id.push_back(i);
+        } else oth += a[i];
+    }
+    if (oth - 2 * (n - one - 1) < one) {
+        cout << "NO\n";
+        return;
+    }
+    int ans = n - 1 - max(0LL, one - 2);
+    cout << "YES " << ans << '\n';
+    int pre = -1, fir = -1;
+    vector<pii> edge;
+    rep (i, 0, n) {
+        if (a[i] >= 2) {
+            if (pre != -1) {
+                edge.push_back({pre, i});
+                a[pre]--;
+                a[i]--;
+            } else {
+                fir = i;
+            }
+            pre = i;
+        }
+    }
+    if (ssize(id) > 0) {
+        edge.push_back({fir, id.back()});
+        a[fir]--;
+        assert(a[fir] >= 0);
+        id.pop_back();
+    }
+    if (ssize(id) > 0) {
+        edge.push_back({pre, id.back()});
+        a[pre]--;
+        assert(a[pre] >= 0);
+        id.pop_back();
+    }
+    while (!id.empty()) {
+        rep (i, 0, n) if (!vis[i] && a[i] > 0) {
+            edge.push_back({i, id.back()});
+            a[i]--;
+            id.pop_back();
+            break;
+        }
+    }
+    cout << ssize(edge) << '\n';
+    for (auto [u, v] : edge) cout<< u + 1 << ' ' << v + 1 << '\n';
 }
  
-int main() {
+signed main() {
     ZTMYACANESOCUTE;
     int T = 1;
-    cin >> T;
+    // cin >> T;
     while (T--) {
         solve();
     }

@@ -2,7 +2,7 @@
 #define _GLIBCXX_DEBUG 1
 #endif
 #pragma GCC optimize("O3,unroll-loops")
-// #pragma GCC target("avx,popcnt,sse4,abm")
+#pragma GCC target("avx,popcnt,sse4,abm")
 #include<bits/stdc++.h>
 using namespace std;
 
@@ -53,31 +53,28 @@ const int B = 320;
 int fpow (int x, int exp, int mod = LLONG_MAX) { if (x == 0) return 0; int res = 1; while (exp > 0) { if (exp & 1) res = res * x % mod; x = x * x % mod; exp >>= 1; } return res; }
 
 void solve() {
-    int n; cin >> n;
-    int x; cin >> x;
-    x--;
-    vector<vector<int>> adj(n);
-    rep (i, 0, n - 1) {
-        int a, b; cin >> a >> b; a--, b--;
-        adj[a].push_back(b);
-        adj[b].push_back(a);
-    }
-    vector<int> dp(n, 0), dep(n, 0);
-    auto dfs = [&](auto self, int u, int pa) -> void {
-        for (int v : adj[u]) {
-            if (v == pa) continue;
-            dep[v] = dep[u] + 1;
-            self(self, v, u);
-            chmax(dp[u], dp[v] + 1);
+    int n, q; cin >> n >> q;
+    vector<int> a(n + 1);
+    rep (i, 1, n + 1) cin >> a[i];
+    auto b = a;
+    partial_sum(all(b), b.begin());
+    while (q--) {
+        int t; cin >> t;
+        if (t == 1) {
+            int x; cin >> x;
+            b[x] += a[x + 1] - a[x];
+            swap(a[x], a[x + 1]);
+        } else {
+            int l, r; cin >> l >> r;
+            cout << b[r] - b[l - 1] << '\n';
         }
-    };
-    dfs(dfs, 0, -1);
-    cout << (dp[x] + dep[x]) * 2 << '\n';
+    }
 }
  
 signed main() {
     ZTMYACANESOCUTE;
     int T = 1;
+    // cin >> T;
     while (T--) {
         solve();
     }

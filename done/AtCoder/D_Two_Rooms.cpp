@@ -2,9 +2,12 @@
 #define _GLIBCXX_DEBUG 1
 #endif
 #pragma GCC optimize("O3,unroll-loops")
-// #pragma GCC target("avx,popcnt,sse4,abm")
+#pragma GCC target("avx,popcnt,sse4,abm")
 #include<bits/stdc++.h>
 using namespace std;
+
+#define int long long
+
 using ll  = long long;
 using ull = unsigned long long;
 using ld = long double;
@@ -12,14 +15,13 @@ using ld = long double;
 #define all(a) (a).begin(), (a).end()
 #define rep(X, a, b) for(int X = a; X < b; ++X)
 using pii = pair<int, int>;
-using pll = pair<ll, ll>;
 using pld = pair<ld, ld>;
 #define fi first
 #define se second
 
 #ifdef LOCAL
 #define ZTMYACANESOCUTE // freopen("in.txt", "r", stdin);
-#define debug(X...) std::cerr << "\e[1;31m" << #X << "\033[0m" << " = ", dbg(X)
+#define debug(...) {cerr << #__VA_ARGS__ << " = "; dbg(__VA_ARGS__);}
 #else
 #define ZTMYACANESOCUTE ios_base::sync_with_stdio(0), cin.tie(0);
 #define debug(...) 6;
@@ -31,8 +33,6 @@ void dbg(T t, U ...u) { cerr << t << ' '; dbg(u...); }
 
 pii operator + (const pii &p1, const pii &p2) { return make_pair(p1.fi + p2.fi, p1.se + p2.se); }
 pii operator - (const pii &p1, const pii &p2) { return make_pair(p1.fi - p2.fi, p1.se - p2.se); }
-pll operator + (const pll &p1, const pll &p2) { return make_pair(p1.fi + p2.fi, p1.se + p2.se); }
-pll operator - (const pll &p1, const pll &p2) { return make_pair(p1.fi - p2.fi, p1.se - p2.se); }
 
 template<class T> bool chmin(T &a, T b) { return (b < a && (a = b, true)); }
 template<class T> bool chmax(T &a, T b) { return (a < b && (a = b, true)); }
@@ -50,29 +50,40 @@ const int B = 320;
 // mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 // int get_rand(int l, int r){ return uniform_int_distribution<int>(l, r)(rng); }
  
-ll fpow (ll x, ll exp, ll mod = LLONG_MAX) { if (x == 0) return 0; ll res = 1; while (exp > 0) { if (exp & 1) res = res * x % mod; x = x * x % mod; exp >>= 1; } return res; }
-
-
+int fpow (int x, int exp, int mod = LLONG_MAX) { if (x == 0) return 0; int res = 1; while (exp > 0) { if (exp & 1) res = res * x % mod; x = x * x % mod; exp >>= 1; } return res; }
 
 void solve() {
     int n; cin >> n;
-    vector<vector<int>> adj(n);
-    rep (i, 1, n) {
-        int p; cin >> p;
-        p--;
-        adj[p].push_back(i);
-    } 
-    vector<int> a(n);
-    rep (i, 0, n) cin >> a[i];
-    auto dfs = [&](auto self, int u) -> void {
-
+    vector a(n, vector<int>(n));
+    rep (i, 0, n) rep (j, 0, n) cin >> a[i][j];
+    string s(n, 'X');
+    vector<bool> good(n, 0);
+    auto get_state = [&]() -> void {
+        rep (i, 0, n) {
+            int sum = 0, sum2 = 0;
+            rep (j, 0, n) ((s[i] == s[j]) ? sum : sum2) += a[i][j];
+            good[i] = sum >= sum2;
+        }
     };
+    get_state();
+    while (true) {
+        bool f = 0;
+        rep (i, 0, n) {
+            if (good[i]) continue;
+            s[i] ^= 1;
+            get_state();
+            f = 1;
+            break;
+        }
+        if (!f) break;
+    }
+    cout << s << '\n';
 }
  
-int main() {
+signed main() {
     ZTMYACANESOCUTE;
     int T = 1;
-    cin >> T;
+    // cin >> T;
     while (T--) {
         solve();
     }
