@@ -5,14 +5,14 @@
 #pragma GCC target("avx,popcnt,sse4,abm")
 #include<bits/stdc++.h>
 using namespace std;
+
+
 using ll  = long long;
 using ull = unsigned long long;
 using ld = long double;
 #define pb push_back
 #define all(a) (a).begin(), (a).end()
 #define rep(X, a, b) for(int X = a; X < b; ++X)
-using pii = pair<int, int>;
-using pll = pair<ll, ll>;
 using pld = pair<ld, ld>;
 #define fi first
 #define se second
@@ -29,10 +29,6 @@ void dbg() { cerr << '\n'; }
 template<typename T, typename ...U>
 void dbg(T t, U ...u) { cerr << t << ' '; dbg(u...); }
 
-pii operator + (const pii &p1, const pii &p2) { return make_pair(p1.fi + p2.fi, p1.se + p2.se); }
-pii operator - (const pii &p1, const pii &p2) { return make_pair(p1.fi - p2.fi, p1.se - p2.se); }
-pll operator + (const pll &p1, const pll &p2) { return make_pair(p1.fi + p2.fi, p1.se + p2.se); }
-pll operator - (const pll &p1, const pll &p2) { return make_pair(p1.fi - p2.fi, p1.se - p2.se); }
 
 template<class T> bool chmin(T &a, T b) { return (b < a && (a = b, true)); }
 template<class T> bool chmax(T &a, T b) { return (a < b && (a = b, true)); }
@@ -50,7 +46,7 @@ const int B = 320;
 // mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 // int get_rand(int l, int r){ return uniform_int_distribution<int>(l, r)(rng); }
  
-ll fpow (ll x, ll exp, ll mod = LLONG_MAX) { if (x == 0) return 0; ll res = 1; while (exp > 0) { if (exp & 1) res = res * x % mod; x = x * x % mod; exp >>= 1; } return res; }
+int fpow (int x, int exp, int mod = LLONG_MAX) { if (x == 0) return 0; int res = 1; while (exp > 0) { if (exp & 1) res = res * x % mod; x = x * x % mod; exp >>= 1; } return res; }
 
 namespace internal {
 
@@ -182,25 +178,44 @@ template <class S, S (*op)(S, S), S (*e)()> struct segtree {
     void update(int k) { d[k] = op(d[2 * k], d[2 * k + 1]); }
 };
 
-using info = array<array<int, 3>, 3>;
+#define int long long
+using pii = pair<int, int>;
 
-array<info, 9> arr;
+pii op(pii a, pii b) {
+    return {max(a.fi, b.fi), min(a.se, b.se)};
+}
 
-info op(info x, info y) {
-    info res = ;
+pii e() {
+    return {-LINF, LINF};
 }
 
 void solve() {
-    int n; cin >> n;
-    vector<int> G(n);
-    rep (i, 0, 3) {
-        string s; cin >> s;
-        rep (j, 0, n) if (G[j] == '#') G[j] |= 1 << i;
+    int n, q; cin >> n >> q;
+    segtree<pii, op, e> A(n), B(n);
+    rep (i, 0, n) {
+        int x, y; cin >> x >> y;
+        A.set(i, {x + y, x + y});
+        B.set(i, {x - y, x - y});
     }
-    
+    while (q--) {
+        int t; cin >> t;
+        if (t == 1) {
+            int i, x, y; cin >> i >> x >> y;
+            i--;
+            A.set(i, {x + y, x + y});
+            B.set(i, {x - y, x - y});
+        } else {
+            int l, r, x, y; cin >> l >> r >> x >> y;
+            l--;
+            auto [mx1, mn1] = A.prod(l, r);
+            auto [mx2, mn2] = B.prod(l, r);
+            tie(x, y) = make_pair(x + y, x - y);
+            cout << max({abs(mx1 - x), abs(mn1 - x), abs(mx2 - y), abs(mn2 - y)}) << '\n';
+        }
+    }
 }
  
-int main() {
+signed main() {
     ZTMYACANESOCUTE;
     int T = 1;
     // cin >> T;
