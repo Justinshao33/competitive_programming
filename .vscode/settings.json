@@ -92,6 +92,6 @@
     },
     "C_Cpp.errorSquiggles": "disabled",
     "cph.general.defaultLanguage": "cpp",
-    "cph.language.cpp.Args": "-std=c++20 -D LOCAL -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC",
+    "cph.language.cpp.Args": "-std=c++20 -D LOCAL -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC -Wall -Wextra",
     "cph.language.cpp.SubmissionCompiler": "GNU G++20 13.2 (64 bit, winlibs)"
 }
